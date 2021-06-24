@@ -104,6 +104,26 @@ var runCmd = &cli.Command{
 	Usage: "Start lotus worker",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
+			Name:  "c2address",
+			Usage: "extern c2 ip and port",
+			Value: "",
+		},
+		&cli.StringFlag{
+			Name:  "rpc",
+			Usage: "worker rpc ip and port",
+			Value: "",
+		},
+		&cli.StringFlag{
+			Name:  "workername",
+			Usage: "worker name will display on jobs list",
+			Value: "",
+		},
+		&cli.StringFlag{
+			Name:  "ability",
+			Usage: "worker sealing ability",
+			Value: "AP:1,PC1:1,PC2:1,C1:1,C2:1,FIN:1,GET:1,UNS:1,RD:1",
+		},
+		&cli.StringFlag{
 			Name:  "listen",
 			Usage: "host address and port the worker api will listen on",
 			Value: "0.0.0.0:3456",
@@ -169,6 +189,16 @@ var runCmd = &cli.Command{
 	},
 	Action: func(cctx *cli.Context) error {
 		log.Info("Starting lotus worker")
+
+		if cctx.String("c2address") != "" {
+			os.Setenv("C2_ADDRESS", cctx.String("c2address"))
+		}
+		if cctx.String("workername") != "" {
+			os.Setenv("WORKER_NAME", cctx.String("workername"))
+		}
+		if cctx.String("ability") != "" {
+			os.Setenv("ABILITY", cctx.String("ability"))
+		}
 
 		if !cctx.Bool("enable-gpu-proving") {
 			if err := os.Setenv("BELLMAN_NO_GPU", "true"); err != nil {

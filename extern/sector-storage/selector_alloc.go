@@ -50,6 +50,12 @@ func (s *allocSelector) Ok(ctx context.Context, task sealtasks.TaskType, spt abi
 		return false, xerrors.Errorf("getting sector size: %w", err)
 	}
 
+	if task == sealtasks.TTAddPiece {
+		if isAddPice := s.index.MaybeAddPice(ctx, s.alloc, ssize, s.ptype); !isAddPice {
+			return false, xerrors.Errorf("disk space issue")
+		}
+	}
+
 	best, err := s.index.StorageBestAlloc(ctx, s.alloc, ssize, s.ptype)
 	if err != nil {
 		return false, xerrors.Errorf("finding best alloc storage: %w", err)
@@ -69,3 +75,51 @@ func (s *allocSelector) Cmp(ctx context.Context, task sealtasks.TaskType, a, b *
 }
 
 var _ WorkerSelector = &allocSelector{}
+
+func (s *allocSelector) FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, spt abi.RegisteredSealProof, whnd *workerHandle) bool {
+	paths, err := whnd.workerRpc.Paths(ctx)
+	if err != nil {
+		return false
+	}
+
+	have := map[stores.ID]struct{}{}
+	for _, path := range paths {
+		have[path.ID] = struct{}{}
+	}
+
+	var ft storiface.SectorFileType
+	switch task {
+	case sealtasks.TTAddPiece:
+		ft = 0
+	case sealtasks.TTPreCommit1:
+		ft = storiface.FTUnsealed
+	case sealtasks.TTPreCommit2:
+		ft = storiface.FTCache | storiface.FTSealed
+	case sealtasks.TTCommit1:
+		ft = storiface.FTCache | storiface.FTSealed
+	case sealtasks.TTCommit2:
+		ft = storiface.FTCache | storiface.FTSealed
+	case sealtasks.TTFetch:
+		ft = storiface.FTUnsealed | storiface.FTCache | storiface.FTSealed
+	case sealtasks.TTFinalize:
+		ft = storiface.FTCache | storiface.FTSealed
+	}
+
+	ssize, err := spt.SectorSize()
+	if err != nil {
+		return false
+	}
+
+	find, err := s.index.StorageFindSector(ctx, sid, ft, ssize, false)
+	if err != nil {
+		return false
+	}
+
+	for _, info := range find {
+		if _, ok := have[info.ID]; ok {
+			return true
+		}
+	}
+
+	return false
+}

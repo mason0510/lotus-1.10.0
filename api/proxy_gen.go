@@ -694,6 +694,8 @@ type StorageMinerStruct struct {
 
 		StorageAttach func(p0 context.Context, p1 stores.StorageInfo, p2 fsutil.FsStat) error `perm:"admin"`
 
+		MaybeAddPice func(p0 context.Context, p1 storiface.SectorFileType, p2 abi.SectorSize, p3 storiface.PathType) bool `perm:"admin"`
+
 		StorageBestAlloc func(p0 context.Context, p1 storiface.SectorFileType, p2 abi.SectorSize, p3 storiface.PathType) ([]stores.StorageInfo, error) `perm:"admin"`
 
 		StorageDeclareSector func(p0 context.Context, p1 stores.ID, p2 abi.SectorID, p3 storiface.SectorFileType, p4 bool) error `perm:"admin"`
@@ -3250,6 +3252,10 @@ func (s *StorageMinerStruct) StorageAttach(p0 context.Context, p1 stores.Storage
 
 func (s *StorageMinerStub) StorageAttach(p0 context.Context, p1 stores.StorageInfo, p2 fsutil.FsStat) error {
 	return xerrors.New("method not supported")
+}
+
+func (s *StorageMinerStruct) MaybeAddPice(p0 context.Context, p1 storiface.SectorFileType, p2 abi.SectorSize, p3 storiface.PathType) bool {
+	return s.Internal.MaybeAddPice(p0, p1, p2, p3)
 }
 
 func (s *StorageMinerStruct) StorageBestAlloc(p0 context.Context, p1 storiface.SectorFileType, p2 abi.SectorSize, p3 storiface.PathType) ([]stores.StorageInfo, error) {
