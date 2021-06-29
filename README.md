@@ -1,3 +1,8 @@
+
+## 单miner addpice优化
+
+为了将addpice的任务更加均匀地下发到各个worker上，对做ap的worker必须捆绑pc1任务，否则worker无法接收到ap任务.
+
 <p align="center">
   <a href="https://docs.filecoin.io/" title="Filecoin Docs">
     <img src="documentation/images/lotus_logo_h.png" alt="Project Lotus Logo" width="244" />
