@@ -3,6 +3,10 @@
 
 为了将addpice的任务更加均匀地下发到各个worker上，对做ap的worker必须捆绑pc1任务，否则worker无法接收到ap任务.
 
+## 捐赠fil地址
+
+f15anrwxvlizzlko2ueonrh4bdiymg6ab36dixtxi
+
 <p align="center">
   <a href="https://docs.filecoin.io/" title="Filecoin Docs">
     <img src="documentation/images/lotus_logo_h.png" alt="Project Lotus Logo" width="244" />
@@ -59,6 +63,4 @@ When implementing a change:
 
 Dual-licensed under [MIT](https://github.com/filecoin-project/lotus/blob/master/LICENSE-MIT) + [Apache 2.0](https://github.com/filecoin-project/lotus/blob/master/LICENSE-APACHE)
 
-## 捐赠fil地址
 
-f15anrwxvlizzlko2ueonrh4bdiymg6ab36dixtxi
